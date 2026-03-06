@@ -1,0 +1,46 @@
+{
+  "currency": "UF",
+  "base": {
+    "name": "Plataforma Base",
+    "price": 0.4,
+    "period": "mes",
+    "description": "Todo lo esencial para gestionar tu negocio de estética con profesionalismo.",
+    "features": [
+      "Agenda inteligente con vista diaria y semanal",
+      "Gestión de citas y recordatorios automáticos",
+      "Fichas de clientes con historial completo",
+      "Panel de métricas básicas",
+      "Soporte por email prioritario"
+    ]
+  },
+  "modules": [
+    {
+      "id": "marketing",
+      "name": "Marketing & Fidelización",
+      "price": 0.25,
+      "description": "Campañas automatizadas, programa de puntos y referidos.",
+      "icon": "Megaphone"
+    },
+    {
+      "id": "inventory",
+      "name": "Inventario & Productos",
+      "price": 0.5,
+      "description": "Control de stock, alertas de reposición y catálogo de productos.",
+      "icon": "Package"
+    },
+    {
+      "id": "finance",
+      "name": "Finanzas & Reportes",
+      "price": 0.75,
+      "description": "Facturación, control de gastos y reportes avanzados de rentabilidad.",
+      "icon": "TrendingUp"
+    },
+    {
+      "id": "team",
+      "name": "Equipo & Turnos",
+      "price": 1.0,
+      "description": "Gestión de empleados, turnos rotativos y comisiones.",
+      "icon": "Users"
+    }
+  ]
+}
