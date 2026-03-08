@@ -18,7 +18,8 @@ export const updatePreferencesSchema = z.object({
       border: hexColor,
     })
     .strict()
-    .optional(),
+    .optional()
+    .nullable(),
   logo_url: z.string().url("URL inválida").max(2048).optional().nullable(),
   banner_horizontal_url: z.string().url("URL inválida").max(2048).optional().nullable(),
   banner_vertical_url: z.string().url("URL inválida").max(2048).optional().nullable(),

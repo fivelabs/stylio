@@ -173,7 +173,7 @@ export default function Hero() {
         >
           {videoVisible && (
             <iframe
-              src="https://www.youtube-nocookie.com/embed/UhWvaK5YUNY?autoplay=1&mute=1&loop=1&playlist=UhWvaK5YUNY&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
+              src="https://www.youtube-nocookie.com/embed/wsaLjBy0T1c?autoplay=1&mute=1&loop=1&playlist=wsaLjBy0T1c&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1"
               title="Stylio demo"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen

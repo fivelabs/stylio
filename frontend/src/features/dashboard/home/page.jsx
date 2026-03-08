@@ -1,6 +1,6 @@
-import { useAuth } from "@/app/AuthProvider";
+import { useAuth } from "@/app/providers/AuthProvider";
 
-export default function DashboardHome() {
+export default function HomePage() {
   const { user } = useAuth();
 
   return (

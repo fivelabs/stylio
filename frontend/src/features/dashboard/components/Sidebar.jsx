@@ -8,8 +8,8 @@ import {
   ChevronRight,
   LogOut,
 } from "lucide-react";
-import { useAuth } from "@/app/AuthProvider";
-import { useTenant } from "@/app/TenantProvider";
+import { useAuth } from "@/app/providers/AuthProvider";
+import { useTenant } from "@/app/providers/TenantProvider";
 
 const NAV_ITEMS = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },

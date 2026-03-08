@@ -41,3 +41,15 @@ export function signToken(user) {
     { expiresIn: env.JWT_EXPIRES_IN }
   );
 }
+
+export function signRefreshToken(user) {
+  return jwt.sign(
+    { userId: user.id, tenantId: user.tenant_id },
+    env.JWT_REFRESH_SECRET,
+    { expiresIn: env.JWT_REFRESH_EXPIRES_IN }
+  );
+}
+
+export function verifyRefreshToken(token) {
+  return jwt.verify(token, env.JWT_REFRESH_SECRET);
+}

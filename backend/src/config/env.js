@@ -10,5 +10,7 @@ export const env = {
   TENANT_BASE_DOMAIN: process.env.TENANT_BASE_DOMAIN || "localhost",
 
   JWT_SECRET: process.env.JWT_SECRET || "change-me-in-production",
-  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "7d",
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || "15m",
+  JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || "change-refresh-in-production",
+  JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || "30d",
 };

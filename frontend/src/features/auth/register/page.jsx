@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { registerSchema } from "@shared/schemas/auth.schema.js";
-import { useAuth } from "@/app/AuthProvider";
-import AuthLayout from "./AuthLayout";
+import { useAuth } from "@/app/providers/AuthProvider";
+import AuthLayout from "@/features/auth/layout";
 
 const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN || "localhost";
 const FRONTEND_PORT = window.location.port;
@@ -68,10 +68,10 @@ export default function RegisterPage() {
     <AuthLayout>
       <div>
         <h2 className="font-heading text-3xl font-bold text-accent tracking-tight">
-          Crea tu salón
+          Registra tu negocio en Stylio
         </h2>
         <p className="text-text-primary/50 mt-2 text-[15px]">
-          Empieza gratis. Sin tarjeta de crédito.
+          Empieza gratis. Regístrate para empezar a gestionar tu negocio con Stylio.
         </p>
       </div>
 
@@ -114,7 +114,7 @@ export default function RegisterPage() {
 
         <div>
           <label htmlFor="tenant_name" className="block text-sm font-medium text-text-primary/70 mb-2">
-            Nombre del salón
+            Nombre del espacio de trabajo
           </label>
           <input
             id="tenant_name"
@@ -129,7 +129,7 @@ export default function RegisterPage() {
 
         <div>
           <label htmlFor="subdomain" className="block text-sm font-medium text-text-primary/70 mb-2">
-            Subdominio
+            URL de acceso
           </label>
           <div className={`flex items-center rounded-xl bg-surface border transition-all duration-200 focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/10 ${errors.subdomain ? "border-red-400" : "border-border"}`}>
             <input
@@ -141,7 +141,7 @@ export default function RegisterPage() {
               className="flex-1 px-4 py-3 bg-transparent text-text-primary placeholder:text-text-primary/30 outline-none rounded-l-xl"
             />
             <span className="pr-4 text-sm text-text-primary/30 select-none whitespace-nowrap">
-              .stylio.app
+              .stylio.cl
             </span>
           </div>
           {errors.subdomain && <p className="text-red-500 text-xs mt-1.5">{errors.subdomain}</p>}
@@ -197,19 +197,12 @@ export default function RegisterPage() {
             <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
           ) : (
             <>
-              Crear mi salón
+              Registrar mi negocio
               <ArrowRight className="w-4 h-4" />
             </>
           )}
         </button>
       </form>
-
-      <p className="mt-8 text-center text-sm text-text-primary/40">
-        ¿Ya tienes cuenta?{" "}
-        <Link to="/login" className="text-brand font-medium hover:text-brand-dark transition-colors">
-          Inicia sesión
-        </Link>
-      </p>
     </AuthLayout>
   );
 }

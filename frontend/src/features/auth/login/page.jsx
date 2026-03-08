@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { loginSchema } from "@shared/schemas/auth.schema.js";
-import { useAuth } from "@/app/AuthProvider";
-import { useTenant } from "@/app/TenantProvider";
-import AuthLayout from "./AuthLayout";
+import { useAuth } from "@/app/providers/AuthProvider";
+import { useTenant } from "@/app/providers/TenantProvider";
+import AuthLayout from "@/features/auth/layout";
 
 export default function LoginPage() {
   const { login, isAuthenticated } = useAuth();
@@ -57,7 +57,7 @@ export default function LoginPage() {
         <p className="text-text-primary/50 mt-2 text-[15px]">
           {tenant
             ? `Ingresa a tu cuenta en ${tenant.name}.`
-            : "Ingresa a tu cuenta para gestionar tu salón."}
+            : "Ingresa a tu cuenta para gestionar tu espacio de trabajo."}
         </p>
       </div>
 
@@ -134,10 +134,7 @@ export default function LoginPage() {
       </form>
 
       <p className="mt-8 text-center text-sm text-text-primary/40">
-        ¿No tienes cuenta?{" "}
-        <Link to="/register" className="text-brand font-medium hover:text-brand-dark transition-colors">
-          Crea tu salón gratis
-        </Link>
+        Contacta al administrador de tu espacio si no tienes acceso.
       </p>
     </AuthLayout>
   );

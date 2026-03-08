@@ -27,7 +27,7 @@ export class Preference extends TenantModel {
     let pref = await this.findByTenantId(tenant.id);
     const payload = {
       visible_name: data.visible_name,
-      colors: data.colors,
+      colors: data.colors != null ? JSON.stringify(data.colors) : null,
       logo_url: data.logo_url,
       banner_horizontal_url: data.banner_horizontal_url,
       banner_vertical_url: data.banner_vertical_url,

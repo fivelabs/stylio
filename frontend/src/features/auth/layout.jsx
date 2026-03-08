@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useTenant } from "@/app/TenantProvider";
+import { useTenant } from "@/app/providers/TenantProvider";
 
 export default function AuthLayout({ children }) {
   const { tenant, preferences } = useTenant();
@@ -41,7 +41,7 @@ export default function AuthLayout({ children }) {
                 </Link>
                 <div className="mb-20">
                   <h1 className="font-heading text-4xl xl:text-5xl font-bold text-white leading-[1.1] mb-6">
-                    Tu salón merece<br />la mejor tecnología.
+                    Tu negocio merece<br />la mejor tecnología.
                   </h1>
                   <p className="text-white/60 text-lg max-w-sm leading-relaxed">
                     Gestiona citas, clientes y equipo desde una sola plataforma diseñada para profesionales de la belleza.

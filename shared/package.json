@@ -2,6 +2,11 @@
   "name": "@stylio/shared",
   "version": "1.0.0",
   "type": "module",
+  "exports": {
+    "./schemas/auth.schema.js": "./schemas/auth.schema.js",
+    "./schemas/user.schema.js": "./schemas/user.schema.js",
+    "./schemas/preferences.schema.js": "./schemas/preferences.schema.js"
+  },
   "dependencies": {
     "zod": "^4.3.6"
   }

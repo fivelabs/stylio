@@ -1,15 +1,15 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useTenant } from "@/app/TenantProvider";
-import PrivateRoute from "@/app/PrivateRoute";
-import LandingPage from "@/features/landing/LandingPage";
-import LoginPage from "@/features/auth/LoginPage";
-import RegisterPage from "@/features/auth/RegisterPage";
+import { useTenant } from "@/app/providers/TenantProvider";
+import PrivateRoute from "@/app/routes/PrivateRoute";
+import LandingPage from "@/features/landing/page";
+import LoginPage from "@/features/auth/login/page";
+import RegisterPage from "@/features/auth/register/page";
 import DashboardLayout from "@/features/dashboard/components/DashboardLayout";
-import DashboardHome from "@/features/dashboard/DashboardHome";
-import CitasPage from "@/features/dashboard/CitasPage";
-import ClientesPage from "@/features/dashboard/ClientesPage";
-import ServiciosPage from "@/features/dashboard/ServiciosPage";
-import ConfiguracionPage from "@/features/dashboard/ConfiguracionPage";
+import HomePage from "@/features/dashboard/home/page";
+import AppointmentsPage from "@/features/dashboard/appointments/page";
+import ClientsPage from "@/features/dashboard/clients/page";
+import ServicesPage from "@/features/dashboard/services/page";
+import SettingsPage from "@/features/dashboard/settings/page";
 
 function LandingRoutes() {
   return (
@@ -28,16 +28,16 @@ function TenantRoutes() {
       <Route
         path="/"
         element={
-          // <PrivateRoute>
-          // </PrivateRoute>
-          <DashboardLayout />
+          <PrivateRoute>
+            <DashboardLayout />
+          </PrivateRoute>
         }
       >
-        <Route index element={<DashboardHome />} />
-        <Route path="citas" element={<CitasPage />} />
-        <Route path="clientes" element={<ClientesPage />} />
-        <Route path="servicios" element={<ServiciosPage />} />
-        <Route path="configuracion" element={<ConfiguracionPage />} />
+        <Route index element={<HomePage />} />
+        <Route path="citas" element={<AppointmentsPage />} />
+        <Route path="clientes" element={<ClientsPage />} />
+        <Route path="servicios" element={<ServicesPage />} />
+        <Route path="configuracion" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

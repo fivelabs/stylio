@@ -1,4 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { configureClient } from "@/api/client";
+import { tenantService } from "@/api/tenant.service";
 
 const TenantContext = createContext(null);
 
@@ -17,11 +19,7 @@ const COLOR_KEYS = [
 function applyThemeColors(colors) {
   if (!colors) return;
   if (typeof colors === "string") {
-    try {
-      colors = JSON.parse(colors);
-    } catch {
-      return;
-    }
+    try { colors = JSON.parse(colors); } catch { return; }
   }
   if (typeof colors !== "object") return;
   const root = document.documentElement;
@@ -38,18 +36,16 @@ function clearThemeColors() {
 
 function extractSubdomain() {
   const host = window.location.hostname;
-
   if (host === BASE_DOMAIN || host === `www.${BASE_DOMAIN}`) return null;
-
-  if (host.endsWith(`.${BASE_DOMAIN}`)) {
-    return host.slice(0, -(BASE_DOMAIN.length + 1));
-  }
-
-  if (BASE_DOMAIN === "localhost" && host.endsWith(".localhost")) {
-    return host.replace(".localhost", "");
-  }
-
+  if (host.endsWith(`.${BASE_DOMAIN}`)) return host.slice(0, -(BASE_DOMAIN.length + 1));
+  if (BASE_DOMAIN === "localhost" && host.endsWith(".localhost")) return host.replace(".localhost", "");
   return null;
+}
+
+function buildApiBase(subdomain) {
+  const apiPort = import.meta.env.VITE_API_PORT || "3000";
+  const host = subdomain ? `${subdomain}.${BASE_DOMAIN}` : BASE_DOMAIN;
+  return `${window.location.protocol}//${host}:${apiPort}`;
 }
 
 export function useTenant() {
@@ -66,34 +62,40 @@ export function TenantProvider({ children }) {
   const [error, setError] = useState(null);
 
   const isTenantApp = !!subdomain;
-  const apiPort = import.meta.env.VITE_API_PORT || "3000";
-  const apiBase = isTenantApp
-    ? `${window.location.protocol}//${subdomain}.${BASE_DOMAIN}:${apiPort}`
-    : `${window.location.protocol}//${BASE_DOMAIN}:${apiPort}`;
+  const apiBase = buildApiBase(subdomain);
+
+  const refreshPreferences = useCallback(() => {
+    if (!subdomain) return Promise.resolve();
+
+    return tenantService.getPreferences().then((prefsData) => {
+      let colors = prefsData?.colors;
+      if (typeof colors === "string") {
+        try { colors = JSON.parse(colors); } catch { colors = null; }
+      }
+      const prefs = prefsData ? { ...prefsData, colors } : null;
+      setPreferences(prefs);
+      if (colors && typeof colors === "object") applyThemeColors(colors);
+      else clearThemeColors();
+      return prefs;
+    });
+  }, [subdomain]);
+
+  useEffect(() => {
+    configureClient({ base: apiBase });
+  }, [apiBase]);
 
   useEffect(() => {
     if (!subdomain) return;
 
-    Promise.all([
-      fetch(`${apiBase}/api/tenants/current`, { headers: { "Content-Type": "application/json" } }).then((res) => {
-        if (!res.ok) throw new Error("Tenant not found");
-        return res.json();
-      }),
-      fetch(`${apiBase}/api/preferences`, { headers: { "Content-Type": "application/json" } }).then((res) => {
-        if (!res.ok) return null;
-        return res.json();
-      }),
-    ])
+    Promise.all([tenantService.getCurrent(), tenantService.getPreferences()])
       .then(([tenantData, prefsData]) => {
         setTenant(tenantData.tenant ?? tenantData);
+
         let colors = prefsData?.colors;
         if (typeof colors === "string") {
-          try {
-            colors = JSON.parse(colors);
-          } catch {
-            colors = null;
-          }
+          try { colors = JSON.parse(colors); } catch { colors = null; }
         }
+
         const prefs = prefsData ? { ...prefsData, colors } : null;
         setPreferences(prefs);
         if (colors && typeof colors === "object") applyThemeColors(colors);
@@ -107,7 +109,7 @@ export function TenantProvider({ children }) {
   }, [isTenantApp]);
 
   return (
-    <TenantContext.Provider value={{ tenant, preferences, subdomain, isTenantApp, apiBase, loading, error }}>
+    <TenantContext.Provider value={{ tenant, preferences, refreshPreferences, subdomain, isTenantApp, apiBase, loading, error }}>
       {children}
     </TenantContext.Provider>
   );

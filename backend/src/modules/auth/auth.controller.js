@@ -1,5 +1,5 @@
 import { db } from "../../config/database.js";
-import { signToken } from "../../middleware/auth.js";
+import { signToken, signRefreshToken, verifyRefreshToken } from "../../middleware/auth.js";
 import { User } from "../users/User.js";
 import { Tenant } from "../tenants/Tenant.js";
 
@@ -8,16 +8,17 @@ export async function login(req, res) {
 
   const user = await User.findByEmail(email);
   if (!user || !user.is_active) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    return res.status(401).json({ error: "Credenciales inválidas" });
   }
 
   const valid = await User.verifyPassword(password, user.password);
   if (!valid) {
-    return res.status(401).json({ error: "Invalid credentials" });
+    return res.status(401).json({ error: "Credenciales inválidas" });
   }
 
   const token = signToken(user);
-  res.json({ token, user: sanitize(user) });
+  const refresh_token = signRefreshToken(user);
+  res.json({ token, refresh_token, user: sanitize(user) });
 }
 
 export async function register(req, res) {
@@ -25,7 +26,7 @@ export async function register(req, res) {
 
   const existing = await Tenant.findOne({ subdomain });
   if (existing) {
-    return res.status(409).json({ error: "Subdomain already taken" });
+    return res.status(409).json({ error: "El subdominio ya está en uso" });
   }
 
   const result = await db.transaction(async (trx) => {
@@ -86,13 +87,36 @@ export async function register(req, res) {
   });
 
   const token = signToken(result.user);
-  res.status(201).json({ token, tenant: result.tenant, user: sanitize(result.user) });
+  const refresh_token = signRefreshToken(result.user);
+  res.status(201).json({ token, refresh_token, tenant: result.tenant, user: sanitize(result.user) });
+}
+
+export async function refresh(req, res) {
+  const { refresh_token } = req.body;
+  if (!refresh_token) {
+    return res.status(400).json({ error: "Refresh token requerido" });
+  }
+
+  try {
+    const payload = verifyRefreshToken(refresh_token);
+    const user = await User.findById(payload.userId);
+
+    if (!user || !user.is_active) {
+      return res.status(401).json({ error: "Usuario inválido o desactivado" });
+    }
+
+    const newToken = signToken(user);
+    const newRefresh = signRefreshToken(user);
+    res.json({ token: newToken, refresh_token: newRefresh, user: sanitize(user) });
+  } catch {
+    return res.status(401).json({ error: "Refresh token inválido o expirado" });
+  }
 }
 
 export async function me(req, res) {
   const user = await User.findById(req.user.userId);
   if (!user) {
-    return res.status(404).json({ error: "User not found" });
+    return res.status(404).json({ error: "Usuario no encontrado" });
   }
   res.json({ user: sanitize(user) });
 }
