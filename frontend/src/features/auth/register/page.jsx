@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { EyeIcon, EyeSlashIcon, ArrowRightIcon } from "@phosphor-icons/react";
 import { registerSchema } from "@shared/schemas/auth.schema.js";
 import { useAuth } from "@/app/providers/AuthProvider";
 import AuthLayout from "@/features/auth/layout";
@@ -182,7 +182,7 @@ export default function RegisterPage() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-text-primary/30 hover:text-text-primary/60 transition-colors"
             >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showPassword ? <EyeSlashIcon size={16} /> : <EyeIcon size={16} />}
             </button>
           </div>
           {errors.password && <p className="text-red-500 text-xs mt-1.5">{errors.password}</p>}
@@ -198,7 +198,7 @@ export default function RegisterPage() {
           ) : (
             <>
               Registrar mi negocio
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRightIcon size={16} weight="bold" />
             </>
           )}
         </button>

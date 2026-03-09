@@ -7,7 +7,6 @@ import Footer from "@/features/landing/components/Footer";
 export default function LandingPage() {
   return (
     <>
-      <div className="noise-overlay" aria-hidden="true" />
       <Navbar />
       <main>
         <Hero />

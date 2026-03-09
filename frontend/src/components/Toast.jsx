@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useState } from "react";
-import { X, AlertCircle, CheckCircle } from "lucide-react";
+import { XIcon, WarningCircleIcon, CheckCircleIcon } from "@phosphor-icons/react";
 
 const ToastContext = createContext(null);
 
@@ -57,16 +57,16 @@ function ToastItem({ toast, onDismiss }) {
       ].join(" ")}
     >
       {isError ? (
-        <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+        <WarningCircleIcon size={20} weight="fill" className="text-red-500 shrink-0 mt-0.5" />
       ) : (
-        <CheckCircle className="w-5 h-5 text-green-500 shrink-0 mt-0.5" />
+        <CheckCircleIcon size={20} weight="fill" className="text-green-500 shrink-0 mt-0.5" />
       )}
       <p className="text-sm font-medium flex-1">{toast.message}</p>
       <button
         onClick={onDismiss}
         className="shrink-0 text-current opacity-40 hover:opacity-70 transition-opacity"
       >
-        <X className="w-4 h-4" />
+        <XIcon size={16} />
       </button>
     </div>
   );

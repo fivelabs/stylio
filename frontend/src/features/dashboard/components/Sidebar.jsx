@@ -1,22 +1,22 @@
 import { NavLink } from "react-router-dom";
 import {
-  LayoutDashboard,
-  CalendarDays,
-  Users,
-  Scissors,
-  Settings,
-  ChevronRight,
-  LogOut,
-} from "lucide-react";
+  SquaresFourIcon,
+  CalendarBlankIcon,
+  UsersIcon,
+  ScissorsIcon,
+  GearIcon,
+  CaretRightIcon,
+  SignOutIcon,
+} from "@phosphor-icons/react";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { useTenant } from "@/app/providers/TenantProvider";
 
 const NAV_ITEMS = [
-  { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/citas", icon: CalendarDays, label: "Citas" },
-  { to: "/clientes", icon: Users, label: "Clientes" },
-  { to: "/servicios", icon: Scissors, label: "Servicios" },
-  { to: "/configuracion", icon: Settings, label: "Configuración" },
+  { to: "/", icon: SquaresFourIcon, label: "Dashboard" },
+  { to: "/citas", icon: CalendarBlankIcon, label: "Citas" },
+  { to: "/clientes", icon: UsersIcon, label: "Clientes" },
+  { to: "/servicios", icon: ScissorsIcon, label: "Servicios" },
+  { to: "/configuracion", icon: GearIcon, label: "Configuración" },
 ];
 
 export default function Sidebar() {
@@ -37,10 +37,7 @@ export default function Sidebar() {
               referrerPolicy="no-referrer"
             />
           ) : (
-            <span
-              className="font-bold text-lg text-accent tracking-tight block"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
+            <span className="font-bold text-lg text-accent tracking-tight block">
               {brandName}
             </span>
           )}
@@ -62,9 +59,9 @@ export default function Sidebar() {
                 >
                   {({ isActive }) => (
                     <>
-                      <Icon className="w-5 h-5 shrink-0" />
+                      <Icon size={20} className="shrink-0" />
                       <span className="flex-1 truncate">{label}</span>
-                      {isActive && <ChevronRight className="w-4 h-4 shrink-0 text-brand" />}
+                      {isActive && <CaretRightIcon size={16} weight="bold" className="shrink-0 text-brand" />}
                     </>
                   )}
                 </NavLink>
@@ -86,13 +83,13 @@ export default function Sidebar() {
               </p>
               <p className="text-xs text-text-primary/50 truncate">{user?.email}</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-text-primary/40 shrink-0" />
+            <CaretRightIcon size={16} className="text-text-primary/40 shrink-0" />
           </div>
           <button
             onClick={logout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-text-primary/70 hover:bg-canvas hover:text-red-500 transition-colors"
           >
-            <LogOut className="w-5 h-5 shrink-0" />
+            <SignOutIcon size={20} className="shrink-0" />
             <span>Salir</span>
           </button>
         </div>

@@ -8,8 +8,6 @@ export default function AuthLayout({ children }) {
 
   return (
     <>
-      <div className="noise-overlay" aria-hidden="true" />
-
       <div className="min-h-screen flex">
         <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden bg-accent">
           {bannerVertical ? (
@@ -35,7 +33,6 @@ export default function AuthLayout({ children }) {
                 <Link
                   to="/"
                   className="font-heading font-bold text-2xl text-white tracking-tight"
-                  style={{ fontFamily: "'Inter', sans-serif" }}
                 >
                   {brandName}
                 </Link>
@@ -58,7 +55,6 @@ export default function AuthLayout({ children }) {
             <Link
               to="/"
               className="lg:hidden block font-heading font-bold text-2xl text-accent tracking-tight mb-10"
-              style={{ fontFamily: "'Inter', sans-serif" }}
             >
               {brandName}
             </Link>

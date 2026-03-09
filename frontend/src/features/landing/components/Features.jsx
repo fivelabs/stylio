@@ -1,18 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  CalendarDays,
-  Users,
-  BarChart3,
-  Bell,
-  Star,
-  Clock,
-  TrendingUp,
-  CheckCircle,
-} from "lucide-react";
-
-gsap.registerPlugin(ScrollTrigger);
+  CalendarBlankIcon,
+  UsersIcon,
+  ChartBarIcon,
+  BellIcon,
+  StarIcon,
+  ClockIcon,
+  TrendUpIcon,
+  CheckCircleIcon,
+} from "@phosphor-icons/react";
 
 const FEATURES = [
   {
@@ -20,7 +15,7 @@ const FEATURES = [
     title: "Agenda Inteligente",
     description:
       "Vista diaria, semanal y mensual con arrastrar y soltar. Sin dobles reservas.",
-    icon: CalendarDays,
+    icon: CalendarBlankIcon,
     color: "#8D7B68",
     ui: AgendaCard,
   },
@@ -29,7 +24,7 @@ const FEATURES = [
     title: "Fichas de Clientes",
     description:
       "Historial completo, preferencias, notas y fotos de cada servicio realizado.",
-    icon: Users,
+    icon: UsersIcon,
     color: "#A3B18A",
     ui: ClientsCard,
   },
@@ -38,7 +33,7 @@ const FEATURES = [
     title: "Métricas en Tiempo Real",
     description:
       "Dashboard con ingresos, citas y retención. Datos que impulsan decisiones.",
-    icon: BarChart3,
+    icon: ChartBarIcon,
     color: "#8D7B68",
     ui: MetricsCard,
   },
@@ -47,7 +42,7 @@ const FEATURES = [
     title: "Automatización Total",
     description:
       "Recordatorios por WhatsApp, confirmaciones y seguimiento post-servicio.",
-    icon: Bell,
+    icon: BellIcon,
     color: "#A3B18A",
     ui: AutomationCard,
   },
@@ -62,9 +57,9 @@ function AgendaCard() {
   ];
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-text-primary/50 uppercase tracking-wider">
+        <span className="text-xs font-medium text-text-primary/40 tracking-wide">
           Hoy — Mar 4
         </span>
         <span className="text-xs font-medium text-brand bg-brand/10 px-2.5 py-0.5 rounded-full">
@@ -74,9 +69,9 @@ function AgendaCard() {
       {slots.map((slot) => (
         <div
           key={slot.time}
-          className="flex items-center gap-3 bg-canvas rounded-xl px-3.5 py-2.5 border border-border/60"
+          className="flex items-center gap-3 bg-canvas/80 rounded-xl px-3.5 py-2.5"
         >
-          <span className="text-xs font-mono font-semibold text-text-primary/40 w-11 shrink-0">
+          <span className="text-xs font-mono font-medium text-text-primary/40 w-11 shrink-0">
             {slot.time}
           </span>
           <div className="flex-1 min-w-0">
@@ -84,8 +79,7 @@ function AgendaCard() {
             <p className="text-xs text-text-primary/40 mt-0.5">{slot.service}</p>
           </div>
           <span
-            className={`w-2 h-2 rounded-full shrink-0 ${slot.status === "confirmed" ? "bg-success" : "bg-amber-400"
-              }`}
+            className={`w-2 h-2 rounded-full shrink-0 ${slot.status === "confirmed" ? "bg-success" : "bg-amber-400"}`}
           />
         </div>
       ))}
@@ -101,9 +95,9 @@ function ClientsCard() {
   ];
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-text-primary/50 uppercase tracking-wider">
+        <span className="text-xs font-medium text-text-primary/40 tracking-wide">
           Top clientes
         </span>
         <span className="text-xs text-text-primary/40">Este mes</span>
@@ -111,9 +105,9 @@ function ClientsCard() {
       {clients.map((client) => (
         <div
           key={client.name}
-          className="flex items-center gap-3 bg-canvas rounded-xl px-3.5 py-2.5 border border-border/60"
+          className="flex items-center gap-3 bg-canvas/80 rounded-xl px-3.5 py-2.5"
         >
-          <div className="w-9 h-9 rounded-full bg-brand/15 flex items-center justify-center text-xs font-bold text-brand shrink-0">
+          <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-[11px] font-bold text-brand shrink-0">
             {client.avatar}
           </div>
           <div className="flex-1 min-w-0">
@@ -124,7 +118,7 @@ function ClientsCard() {
           </div>
           <div className="flex items-center gap-0.5">
             {Array.from({ length: client.rating }).map((_, i) => (
-              <Star key={i} className="w-3 h-3 fill-amber-400 text-amber-400" />
+              <StarIcon key={i} size={11} weight="fill" className="text-amber-400" />
             ))}
           </div>
         </div>
@@ -135,15 +129,15 @@ function ClientsCard() {
 
 function MetricsCard() {
   const metrics = [
-    { label: "Ingresos", value: "€4,280", change: "+12%", icon: TrendingUp },
-    { label: "Citas", value: "142", change: "+8%", icon: Clock },
-    { label: "Retención", value: "87%", change: "+3%", icon: CheckCircle },
+    { label: "Ingresos", value: "€4,280", change: "+12%", icon: TrendUpIcon },
+    { label: "Citas", value: "142", change: "+8%", icon: ClockIcon },
+    { label: "Retención", value: "87%", change: "+3%", icon: CheckCircleIcon },
   ];
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-xs font-semibold text-text-primary/50 uppercase tracking-wider">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs font-medium text-text-primary/40 tracking-wide">
           Dashboard
         </span>
         <span className="text-xs text-text-primary/40">Este mes</span>
@@ -151,14 +145,14 @@ function MetricsCard() {
       {metrics.map((metric) => (
         <div
           key={metric.label}
-          className="flex items-center gap-3 bg-canvas rounded-xl px-3.5 py-3 border border-border/60"
+          className="flex items-center gap-3 bg-canvas/80 rounded-xl px-3.5 py-3"
         >
-          <div className="w-9 h-9 rounded-xl bg-brand/10 flex items-center justify-center shrink-0">
-            <metric.icon className="w-4 h-4 text-brand" />
+          <div className="w-8 h-8 rounded-lg bg-brand/10 flex items-center justify-center shrink-0">
+            <metric.icon size={15} className="text-brand" />
           </div>
           <div className="flex-1">
             <p className="text-xs text-text-primary/40">{metric.label}</p>
-            <p className="text-base font-bold text-text-primary">{metric.value}</p>
+            <p className="text-[15px] font-bold text-text-primary">{metric.value}</p>
           </div>
           <span className="text-xs font-semibold text-success bg-success/10 px-2.5 py-0.5 rounded-full">
             {metric.change}
@@ -178,9 +172,9 @@ function AutomationCard() {
   ];
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1.5">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-text-primary/50 uppercase tracking-wider">
+        <span className="text-xs font-medium text-text-primary/40 tracking-wide">
           Automatizaciones
         </span>
         <span className="text-xs font-medium text-success bg-success/10 px-2.5 py-0.5 rounded-full">
@@ -190,11 +184,10 @@ function AutomationCard() {
       {automations.map((auto) => (
         <div
           key={auto.title}
-          className="flex items-center gap-3 bg-canvas rounded-xl px-3.5 py-2.5 border border-border/60"
+          className="flex items-center gap-3 bg-canvas/80 rounded-xl px-3.5 py-2.5"
         >
           <div
-            className={`w-2 h-2 rounded-full shrink-0 ${auto.status === "active" ? "bg-success" : "bg-text-primary/20"
-              }`}
+            className={`w-1.5 h-1.5 rounded-full shrink-0 ${auto.status === "active" ? "bg-success" : "bg-text-primary/25"}`}
           />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-text-primary truncate">{auto.title}</p>
@@ -214,66 +207,29 @@ function AutomationCard() {
   );
 }
 
-function FeatureCard({ feature, index }) {
-  const cardRef = useRef(null);
-  const [hovered, setHovered] = useState(false);
+function FeatureCard({ feature }) {
   const Icon = feature.icon;
   const UiComponent = feature.ui;
 
-  useEffect(() => {
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) return;
-
-    const ctx = gsap.context(() => {
-      gsap.from(cardRef.current, {
-        y: 60,
-        opacity: 0,
-        duration: 0.9,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: cardRef.current,
-          start: "top 88%",
-          toggleActions: "play none none none",
-        },
-        delay: index * 0.1,
-      });
-    }, cardRef);
-    return () => ctx.revert();
-  }, [index]);
-
   return (
-    <div
-      ref={cardRef}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className={[
-        "group relative bg-surface rounded-[2rem] p-7 sm:p-9 border transition-all duration-500 cursor-default",
-        hovered
-          ? "border-brand/30 shadow-xl shadow-brand/[0.06] -translate-y-1"
-          : "border-border/50",
-      ].join(" ")}
-    >
-      <div className="flex items-start justify-between mb-6">
+    <div className="group bg-surface rounded-2xl p-7 sm:p-8 transition-shadow duration-300 ease-apple hover:shadow-lg hover:shadow-black/5">
+      <div className="mb-5">
         <div
-          className="w-12 h-12 rounded-2xl flex items-center justify-center"
-          style={{ backgroundColor: `${feature.color}15` }}
+          className="w-10 h-10 rounded-xl flex items-center justify-center"
+          style={{ backgroundColor: `${feature.color}12` }}
         >
-          <Icon className="w-5 h-5" style={{ color: feature.color }} />
+          <Icon size={20} style={{ color: feature.color }} />
         </div>
-        <div
-          className={`w-2 h-2 rounded-full transition-colors duration-500 ${hovered ? "bg-success" : "bg-border"
-            }`}
-        />
       </div>
 
-      <h3 className="font-heading font-bold text-xl text-text-primary mb-2">
+      <h3 className="font-heading font-bold text-lg text-text-primary mb-1.5">
         {feature.title}
       </h3>
-      <p className="text-text-primary/50 text-sm leading-relaxed mb-7">
+      <p className="text-text-primary/40 text-sm leading-relaxed mb-6">
         {feature.description}
       </p>
 
-      <div className="bg-canvas rounded-[1.5rem] p-4 border border-border/40">
+      <div className="bg-surface rounded-xl p-4">
         <UiComponent />
       </div>
     </div>
@@ -281,53 +237,50 @@ function FeatureCard({ feature, index }) {
 }
 
 export default function Features() {
-  const sectionRef = useRef(null);
-
-  useEffect(() => {
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) return;
-
-    const ctx = gsap.context(() => {
-      gsap.from("[data-features-title]", {
-        y: 40,
-        opacity: 0,
-        duration: 0.9,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: "[data-features-title]",
-          start: "top 85%",
-          toggleActions: "play none none none",
-        },
-      });
-    }, sectionRef);
-    return () => ctx.revert();
-  }, []);
-
   return (
     <section
       id="features"
-      ref={sectionRef}
-      className="relative py-28 sm:py-36 px-6 sm:px-10 lg:px-16 bg-canvas"
+      className="relative pt-0 pb-32 sm:pb-40 px-6 sm:px-10 lg:px-16 bg-canvas overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="max-w-2xl mb-16 sm:mb-20" data-features-title>
-          <span className="inline-block text-brand text-sm font-semibold uppercase tracking-wider mb-4">
-            Características
-          </span>
-          <h2 className="font-heading font-extrabold text-4xl sm:text-5xl md:text-6xl text-text-primary tracking-tight leading-tight mb-6">
-            Todo lo que necesitas,
+      <div
+        className="absolute left-0 right-0 top-0 pointer-events-none z-0"
+        style={{
+          height: "clamp(16rem, 24vh, 20rem)",
+          background: [
+            "linear-gradient(to bottom,",
+            "#1A1A1A 0%,",
+            "#222 8%,",
+            "#2A2A2A 16%,",
+            "#383838 24%,",
+            "#484848 32%,",
+            "#5C5C5C 40%,",
+            "#727272 48%,",
+            "#8E8E8E 56%,",
+            "#ACACAA 64%,",
+            "#C4C4C2 72%,",
+            "#D8D8D6 80%,",
+            "#ECECEA 88%,",
+            "#F8F8F6 94%,",
+            "#FDFDFD 100%)",
+          ].join(" "),
+        }}
+      />
+      <div className="relative z-10 max-w-6xl mx-auto pt-[clamp(18rem,26vh,22rem)]">
+        <div className="text-center max-w-2xl mx-auto mb-16 sm:mb-20">
+          <h2 className="font-heading font-extrabold text-4xl sm:text-5xl md:text-[3.5rem] text-text-primary tracking-tight leading-[1.1] mb-5">
+            Todo lo que necesitas.
             <br />
-            <span className="text-brand">nada que te sobre.</span>
+            <span className="font-display italic text-brand">Nada que te sobre.</span>
           </h2>
-          <p className="text-text-primary/50 text-lg leading-relaxed">
-            Herramientas diseñadas con precisión quirúrgica para el día a día de
+          <p className="text-text-primary/40 text-lg leading-relaxed">
+            Herramientas diseñadas para el día a día de
             profesionales de la estética.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-          {FEATURES.map((feature, i) => (
-            <FeatureCard key={feature.id} feature={feature} index={i} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {FEATURES.map((feature) => (
+            <FeatureCard key={feature.id} feature={feature} />
           ))}
         </div>
       </div>
