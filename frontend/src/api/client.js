@@ -3,11 +3,13 @@ const REFRESH_KEY = "stylio_refresh";
 
 let baseURL = "";
 let onUnauthorized = null;
+let onSubscriptionRequired = null;
 let refreshPromise = null;
 
-export function configureClient({ base, onAuthError }) {
-  baseURL = base;
-  onUnauthorized = onAuthError;
+export function configureClient({ base, onAuthError, onSubscriptionError } = {}) {
+  if (base !== undefined) baseURL = base;
+  if (onAuthError !== undefined) onUnauthorized = onAuthError;
+  if (onSubscriptionError !== undefined) onSubscriptionRequired = onSubscriptionError;
 }
 
 export function getStoredTokens() {
@@ -76,6 +78,12 @@ export async function api(path, options = {}) {
   }
 
   const data = await res.json().catch(() => ({}));
+
+  if (res.status === 402) {
+    onSubscriptionRequired?.();
+    throw new Error("subscription_required");
+  }
+
   if (!res.ok) throw new Error(data.error || data.message || `Error ${res.status}`);
 
   return data;

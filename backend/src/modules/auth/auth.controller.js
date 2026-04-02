@@ -2,6 +2,7 @@ import { db } from "../../config/database.js";
 import { signToken, signRefreshToken, verifyRefreshToken } from "../../middleware/auth.js";
 import { User } from "../users/User.js";
 import { Tenant } from "../tenants/Tenant.js";
+import { billingService } from "../billing/billing.service.js";
 
 export async function login(req, res) {
   const { email, password } = req.body;
@@ -19,6 +20,10 @@ export async function login(req, res) {
   const token = signToken(user);
   const refresh_token = signRefreshToken(user);
   res.json({ token, refresh_token, user: sanitize(user) });
+
+  if (req.tenant) {
+    billingService.syncSubscriptionStatus(req.tenant).catch(() => { });
+  }
 }
 
 export async function register(req, res) {

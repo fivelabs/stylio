@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon, ArrowRightIcon } from "@phosphor-icons/react";
 import { registerSchema } from "@shared/schemas/auth.schema.js";
 import { useAuth } from "@/app/providers/AuthProvider";
+import { billingService } from "@/api/billing.service";
 import AuthLayout from "@/features/auth/layout";
 
 const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN || "localhost";
@@ -50,10 +51,16 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await register(form);
+      const data = await register(form);
       const port = FRONTEND_PORT ? `:${FRONTEND_PORT}` : "";
       const tenantUrl = `${window.location.protocol}//${form.subdomain}.${BASE_DOMAIN}${port}`;
-      window.location.href = tenantUrl;
+
+      try {
+        const checkoutUrl = await billingService.getNewTenantCheckoutUrl(form.subdomain, data.token);
+        window.location.href = checkoutUrl;
+      } catch {
+        window.location.href = tenantUrl;
+      }
     } catch (err) {
       setApiError(err.message);
     } finally {

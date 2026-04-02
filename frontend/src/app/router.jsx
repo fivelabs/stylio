@@ -9,6 +9,8 @@ import HomePage from "@/features/dashboard/home/page";
 import AppointmentsPage from "@/features/dashboard/appointments/page";
 import ClientsPage from "@/features/dashboard/clients/page";
 import ServicesPage from "@/features/dashboard/services/page";
+import InventoryPage from "@/features/dashboard/inventory/page";
+import SalesPage from "@/features/dashboard/sales/page";
 import SettingsPage from "@/features/dashboard/settings/page";
 
 function LandingRoutes() {
@@ -36,8 +38,10 @@ function TenantRoutes() {
         <Route index element={<HomePage />} />
         <Route path="citas" element={<AppointmentsPage />} />
         <Route path="clientes" element={<ClientsPage />} />
-        <Route path="servicios" element={<ServicesPage />} />
-        <Route path="configuracion" element={<SettingsPage />} />
+        <Route path="servicios"   element={<ServicesPage />}   />
+        <Route path="inventario"    element={<InventoryPage />}  />
+        <Route path="ventas"        element={<SalesPage />}      />
+        <Route path="configuracion" element={<SettingsPage />}   />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

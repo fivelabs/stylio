@@ -16,7 +16,7 @@ const COLOR_KEYS = [
   "border",
 ];
 
-function applyThemeColors(colors) {
+export function applyThemeColors(colors) {
   if (!colors) return;
   if (typeof colors === "string") {
     try { colors = JSON.parse(colors); } catch { return; }
@@ -29,7 +29,7 @@ function applyThemeColors(colors) {
   });
 }
 
-function clearThemeColors() {
+export function clearThemeColors() {
   const root = document.documentElement;
   COLOR_KEYS.forEach((key) => root.style.removeProperty(`--color-${key}`));
 }

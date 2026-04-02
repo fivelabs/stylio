@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
-import { EyeIcon, EyeSlashIcon, ArrowRightIcon } from "@phosphor-icons/react";
+import { Navigate, useSearchParams } from "react-router-dom";
+import { EyeIcon, EyeSlashIcon, ArrowRightIcon, CheckCircleIcon } from "@phosphor-icons/react";
 import { loginSchema } from "@shared/schemas/auth.schema.js";
 import { useAuth } from "@/app/providers/AuthProvider";
 import { useTenant } from "@/app/providers/TenantProvider";
@@ -9,6 +9,8 @@ import AuthLayout from "@/features/auth/layout";
 export default function LoginPage() {
   const { login, isAuthenticated } = useAuth();
   const { tenant } = useTenant();
+  const [searchParams] = useSearchParams();
+  const billingSuccess = searchParams.get("billing") === "success";
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState(null);
@@ -60,6 +62,13 @@ export default function LoginPage() {
             : "Ingresa a tu cuenta para gestionar tu espacio de trabajo."}
         </p>
       </div>
+
+      {billingSuccess && (
+        <div className="mt-6 px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm flex items-center gap-2">
+          <CheckCircleIcon size={16} weight="fill" className="shrink-0" />
+          ¡Pago exitoso! Inicia sesión para empezar a usar Stylio.
+        </div>
+      )}
 
       {apiError && (
         <div className="mt-6 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">

@@ -2,7 +2,13 @@ import { Tenant } from "../modules/tenants/Tenant.js";
 import { runWithTenant } from "../core/tenantContext.js";
 import { env } from "../config/env.js";
 
-const TENANT_FREE = ["/api/health", "/api/auth/register"];
+const TENANT_FREE = [
+  "/api/health",
+  "/api/auth/register",
+  "/api/integrations/google/callback",
+  "/api/integrations/google/webhook",
+  "/api/billing/webhook",
+];
 
 export function tenantMiddleware(req, res, next) {
   if (TENANT_FREE.some((p) => req.path.startsWith(p))) {

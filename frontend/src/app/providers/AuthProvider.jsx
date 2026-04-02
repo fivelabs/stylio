@@ -22,7 +22,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   useMemo(() => {
-    configureClient({ base: apiBase, onAuthError: logout });
+    configureClient({
+      base: apiBase,
+      onAuthError: logout,
+      onSubscriptionError: () => {
+        window.location.href = "/billing";
+      },
+    });
   }, [apiBase, logout]);
 
   const login = useCallback(async (email, password) => {

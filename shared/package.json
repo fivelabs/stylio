@@ -5,7 +5,11 @@
   "exports": {
     "./schemas/auth.schema.js": "./schemas/auth.schema.js",
     "./schemas/user.schema.js": "./schemas/user.schema.js",
-    "./schemas/preferences.schema.js": "./schemas/preferences.schema.js"
+    "./schemas/preferences.schema.js": "./schemas/preferences.schema.js",
+    "./schemas/appointments.schema.js": "./schemas/appointments.schema.js",
+    "./schemas/clients.schema.js": "./schemas/clients.schema.js",
+    "./schemas/services.schema.js": "./schemas/services.schema.js",
+    "./schemas/inventory.schema.js": "./schemas/inventory.schema.js"
   },
   "dependencies": {
     "zod": "^4.3.6"

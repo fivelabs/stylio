@@ -8,7 +8,9 @@ import { registerModules } from "./modules/index.js";
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+  verify: (req, _res, buf) => { req.rawBody = buf; },
+}));
 
 app.use("/api/docs", swaggerServe, swaggerSetup);
 
