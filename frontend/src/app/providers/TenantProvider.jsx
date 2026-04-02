@@ -43,9 +43,12 @@ function extractSubdomain() {
 }
 
 function buildApiBase(subdomain) {
-  const apiPort = import.meta.env.VITE_API_PORT || "3000";
+  // En producción VITE_API_PORT no se define → sin puerto (usa 80/443 estándar)
+  // En desarrollo definir VITE_API_PORT=3000 en .env.local
+  const apiPort = import.meta.env.VITE_API_PORT;
   const host = subdomain ? `${subdomain}.${BASE_DOMAIN}` : BASE_DOMAIN;
-  return `${window.location.protocol}//${host}:${apiPort}`;
+  const portSuffix = apiPort ? `:${apiPort}` : "";
+  return `${window.location.protocol}//${host}${portSuffix}`;
 }
 
 export function useTenant() {
