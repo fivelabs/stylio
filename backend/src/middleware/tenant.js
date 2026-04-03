@@ -11,6 +11,11 @@ const TENANT_FREE = [
 ];
 
 export function tenantMiddleware(req, res, next) {
+  // Rutas que no son /api (assets estaticos, React SPA) no requieren tenant
+  if (!req.path.startsWith("/api/")) {
+    return next();
+  }
+
   if (TENANT_FREE.some((p) => req.path.startsWith(p))) {
     return runWithTenant(null, next);
   }
