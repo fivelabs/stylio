@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon, ArrowRightIcon } from "@phosphor-icons/react";
 import { registerSchema } from "@shared/schemas/auth.schema.js";
 import { useAuth } from "@/app/providers/AuthProvider";
-import { billingService } from "@/api/billing.service";
 import AuthLayout from "@/features/auth/layout";
 
-const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN || "localhost";
+// Inferir el dominio base del hostname actual para no depender de VITE_BASE_DOMAIN
+const _hostParts = window.location.hostname.split(".");
+const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN ||
+  (_hostParts.length > 2 ? _hostParts.slice(-2).join(".") : window.location.hostname);
 const FRONTEND_PORT = window.location.port;
 
 export default function RegisterPage() {
@@ -55,12 +57,7 @@ export default function RegisterPage() {
       const port = FRONTEND_PORT ? `:${FRONTEND_PORT}` : "";
       const tenantUrl = `${window.location.protocol}//${form.subdomain}.${BASE_DOMAIN}${port}`;
 
-      try {
-        const checkoutUrl = await billingService.getNewTenantCheckoutUrl(form.subdomain, data.token);
-        window.location.href = checkoutUrl;
-      } catch {
-        window.location.href = tenantUrl;
-      }
+      window.location.href = tenantUrl;
     } catch (err) {
       setApiError(err.message);
     } finally {

@@ -25,9 +25,7 @@ export function AuthProvider({ children }) {
     configureClient({
       base: apiBase,
       onAuthError: logout,
-      onSubscriptionError: () => {
-        window.location.href = "/billing";
-      },
+      onSubscriptionError: () => {}, // billing deshabilitado temporalmente
     });
   }, [apiBase, logout]);
 
