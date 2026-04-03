@@ -6,7 +6,10 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import { billingService } from "@/api/billing.service";
 import AuthLayout from "@/features/auth/layout";
 
-const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN || "localhost";
+// Inferir el dominio base del hostname actual para no depender de VITE_BASE_DOMAIN
+const _hostParts = window.location.hostname.split(".");
+const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN ||
+  (_hostParts.length > 2 ? _hostParts.slice(-2).join(".") : window.location.hostname);
 const FRONTEND_PORT = window.location.port;
 
 export default function RegisterPage() {
