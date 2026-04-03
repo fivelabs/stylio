@@ -4,7 +4,18 @@ import { tenantService } from "@/api/tenant.service";
 
 const TenantContext = createContext(null);
 
-const BASE_DOMAIN = import.meta.env.VITE_BASE_DOMAIN || "localhost";
+// VITE_BASE_DOMAIN es opcional — si no esta, inferimos el dominio base del hostname actual.
+// Esto permite que el build funcione en cualquier dominio sin reconfigurar variables de entorno.
+function inferBaseDomain() {
+  if (import.meta.env.VITE_BASE_DOMAIN) return import.meta.env.VITE_BASE_DOMAIN;
+  const host = window.location.hostname;
+  const parts = host.split(".");
+  // lashbygyal.stylio.cl → stylio.cl | stylio.cl → stylio.cl | localhost → localhost
+  if (parts.length > 2) return parts.slice(-2).join(".");
+  return host;
+}
+
+const BASE_DOMAIN = inferBaseDomain();
 
 const COLOR_KEYS = [
   "brand",
@@ -42,13 +53,12 @@ function extractSubdomain() {
   return null;
 }
 
-function buildApiBase(subdomain) {
-  // En producción VITE_API_PORT no se define → sin puerto (usa 80/443 estándar)
+function buildApiBase() {
+  // En produccion VITE_API_PORT no se define → URLs relativas al origen actual (no localhost)
   // En desarrollo definir VITE_API_PORT=3000 en .env.local
   const apiPort = import.meta.env.VITE_API_PORT;
-  const host = subdomain ? `${subdomain}.${BASE_DOMAIN}` : BASE_DOMAIN;
-  const portSuffix = apiPort ? `:${apiPort}` : "";
-  return `${window.location.protocol}//${host}${portSuffix}`;
+  if (!apiPort) return ""; // produccion: URLs relativas, siempre al host correcto
+  return `${window.location.protocol}//${window.location.hostname}:${apiPort}`;
 }
 
 export function useTenant() {
@@ -65,7 +75,7 @@ export function TenantProvider({ children }) {
   const [error, setError] = useState(null);
 
   const isTenantApp = !!subdomain;
-  const apiBase = buildApiBase(subdomain);
+  const apiBase = buildApiBase();
 
   const refreshPreferences = useCallback(() => {
     if (!subdomain) return Promise.resolve();
