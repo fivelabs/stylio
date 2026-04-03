@@ -3,7 +3,7 @@ nixPkgs = ["nodejs_20"]
 
 [phases.install]
 cmds = [
-  "npm install --prefix shared && npm install --prefix backend && npm install --prefix frontend",
+  "npm install --include=dev --prefix shared && npm install --include=dev --prefix backend && npm install --include=dev --prefix frontend",
   ]
 
   [phases.build]
@@ -13,4 +13,3 @@ cmds = [
 
     [start]
     cmd = "NODE_ENV=production node backend/src/index.js"
-    
