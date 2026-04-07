@@ -342,7 +342,7 @@ export default function SalesPage() {
                   {formatDate(sale.date)}
                 </td>
                 <td className="px-4 py-3 font-medium">{sale.title}</td>
-                <td className="px-4 py-3 text-text-primary/70">{sale.service}</td>
+                <td className="px-4 py-3 text-text-primary/70">{(sale.services || []).map((s) => s.service_name).join(", ") || "—"}</td>
               </tr>
             ))}
           </tbody>

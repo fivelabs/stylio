@@ -1,11 +1,12 @@
 import { db } from "../../config/database.js";
 import { Appointment } from "../appointments/Appointment.js";
+import { AppointmentService } from "../appointments/AppointmentService.js";
 import { getCurrentTenant } from "../../core/tenantContext.js";
 
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT     = 100;
 
-const SORTABLE_COLUMNS = new Set(["start_at", "title", "service"]);
+const SORTABLE_COLUMNS = new Set(["start_at", "title"]);
 const SORT_DIRECTIONS  = new Set(["asc", "desc"]);
 
 function parseOrder(sortBy, sortDir) {
@@ -29,7 +30,7 @@ export async function listSales(req, res) {
     if (term) {
       const like = `%${term}%`;
       q.where((b) =>
-        b.whereRaw("title LIKE ?", [like]).orWhereRaw("service LIKE ?", [like])
+        b.whereRaw("title LIKE ?", [like])
       );
     }
     return q;
@@ -42,8 +43,22 @@ export async function listSales(req, res) {
 
   const total = Number(countResult.total);
 
+  // Fetch services for each appointment
+  const ids = rows.map((r) => r.id);
+  const allServices = await AppointmentService.findByAppointments(ids);
+  const servicesByAppt = {};
+  for (const s of allServices) {
+    if (!servicesByAppt[s.appointment_id]) servicesByAppt[s.appointment_id] = [];
+    servicesByAppt[s.appointment_id].push({
+      id:           s.id,
+      service_id:   s.service_id,
+      service_name: s.service_name,
+      price:        Number(s.price),
+    });
+  }
+
   res.json({
-    data: rows.map(serialize),
+    data: rows.map((row) => serialize(row, servicesByAppt[row.id] || [])),
     meta: {
       total,
       page,
@@ -73,11 +88,9 @@ export async function getChart(req, res) {
   const sinceStr = localDateStr(since);
   const untilStr = localDateStr(until);
 
-  // Ventas diarias — DATE() devuelve YYYY-MM-DD, coincide con el GROUP BY
+  // Ventas diarias — suma precios desde appointment_services
   const salesRows = await db("appointments as a")
-    .leftJoin("services as s", function () {
-      this.on("s.name", "=", "a.service").andOn("s.tenant_id", "=", "a.tenant_id");
-    })
+    .leftJoin("appointment_services as aps", "aps.appointment_id", "a.id")
     .where("a.tenant_id", tenant.id)
     .where("a.status", "completed")
     .whereRaw("DATE(a.start_at) >= ?", [sinceStr])
@@ -85,7 +98,7 @@ export async function getChart(req, res) {
     .groupByRaw("DATE(a.start_at)")
     .select(
       db.raw("DATE(a.start_at) as day"),
-      db.raw("COALESCE(SUM(s.price), 0) as sales"),
+      db.raw("COALESCE(SUM(aps.price), 0) as sales"),
     );
 
   // Compras diarias
@@ -127,18 +140,15 @@ export async function getSummary(req, res) {
   const since   = new Date();
   since.setDate(since.getDate() - 30);
 
-  // JOIN appointments con services por nombre para sumar el precio.
-  // Si no hay coincidencia en services, la cita igual cuenta pero no aporta al total.
+  // Suma precios desde appointment_services para citas completadas
   const result = await db("appointments as a")
-    .leftJoin("services as s", function () {
-      this.on("s.name", "=", "a.service").andOn("s.tenant_id", "=", "a.tenant_id");
-    })
+    .leftJoin("appointment_services as aps", "aps.appointment_id", "a.id")
     .where("a.tenant_id", tenant.id)
     .where("a.status", "completed")
     .where("a.start_at", ">=", since)
     .select(
-      db.raw("COUNT(*) as count"),
-      db.raw("COALESCE(SUM(s.price), 0) as earnings"),
+      db.raw("COUNT(DISTINCT a.id) as count"),
+      db.raw("COALESCE(SUM(aps.price), 0) as earnings"),
     )
     .first();
 
@@ -149,13 +159,13 @@ export async function getSummary(req, res) {
   });
 }
 
-function serialize(row) {
+function serialize(row, services = []) {
   return {
-    id:      row.id,
-    title:   row.title,
-    service: row.service,
-    date:    row.start_at,
-    color:   row.color,
-    notes:   row.notes ?? null,
+    id:       row.id,
+    title:    row.title,
+    services,
+    date:     row.start_at,
+    color:    row.color,
+    notes:    row.notes ?? null,
   };
 }
