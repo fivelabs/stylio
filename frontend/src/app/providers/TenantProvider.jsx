@@ -4,18 +4,14 @@ import { tenantService } from "@/api/tenant.service";
 
 const TenantContext = createContext(null);
 
-// VITE_BASE_DOMAIN es opcional — si no está, inferimos el dominio base del hostname actual.
+// VITE_BASE_DOMAIN es opcional — si no esta, inferimos el dominio base del hostname actual.
 // Esto permite que el build funcione en cualquier dominio sin reconfigurar variables de entorno.
 function inferBaseDomain() {
   if (import.meta.env.VITE_BASE_DOMAIN) return import.meta.env.VITE_BASE_DOMAIN;
   const host = window.location.hostname;
   const parts = host.split(".");
-  const tld = parts[parts.length - 1];
-  // Dev: lashbygyal.localhost → localhost (cualquier subdominio de localhost → localhost)
-  if (tld === "localhost") return "localhost";
-  // Prod: lashbygyal.stylio.cl → stylio.cl | www.stylio.cl → stylio.cl
+  // lashbygyal.stylio.cl → stylio.cl | stylio.cl → stylio.cl | localhost → localhost
   if (parts.length > 2) return parts.slice(-2).join(".");
-  // Root: stylio.cl → stylio.cl | localhost → localhost
   return host;
 }
 
@@ -58,10 +54,10 @@ function extractSubdomain() {
 }
 
 function buildApiBase() {
-  // En producción VITE_API_PORT no se define → URLs relativas al origen actual (no localhost)
+  // En produccion VITE_API_PORT no se define → URLs relativas al origen actual (no localhost)
   // En desarrollo definir VITE_API_PORT=3000 en .env.local
   const apiPort = import.meta.env.VITE_API_PORT;
-  if (!apiPort) return ""; // producción: URLs relativas, siempre al host correcto
+  if (!apiPort) return ""; // produccion: URLs relativas, siempre al host correcto
   return `${window.location.protocol}//${window.location.hostname}:${apiPort}`;
 }
 

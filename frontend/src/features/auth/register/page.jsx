@@ -53,7 +53,7 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const data = await register(form);
+      await register(form);
       const port = FRONTEND_PORT ? `:${FRONTEND_PORT}` : "";
       const tenantUrl = `${window.location.protocol}//${form.subdomain}.${BASE_DOMAIN}${port}`;
 

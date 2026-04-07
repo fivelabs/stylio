@@ -25,8 +25,8 @@ export const billingService = {
   },
 
   /**
-   * Llamado desde la landing page justo después del registro,
-   * cuando el api client aún apunta al dominio raíz.
+   * Llamado desde la landing page justo despues del registro,
+   * cuando el api client aun apunta al dominio raiz.
    */
   async getNewTenantCheckoutUrl(subdomain, token) {
     const portSuffix = API_PORT ? `:${API_PORT}` : "";
