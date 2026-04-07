@@ -114,9 +114,10 @@ export async function getChart(req, res) {
       db.raw("SUM(cost) as purchases"),
     );
 
-  // Los keys ahora son strings YYYY-MM-DD — coinciden exactamente con el loop
-  const salesMap    = Object.fromEntries(salesRows.map((r) => [r.day, Number(r.sales)]));
-  const purchaseMap = Object.fromEntries(purchaseRows.map((r) => [r.day, Number(r.purchases)]));
+  // DATE() puede devolver un objeto Date en algunos drivers — normalizamos a string YYYY-MM-DD
+  const toKey = (v) => (v instanceof Date ? localDateStr(v) : String(v));
+  const salesMap    = Object.fromEntries(salesRows.map((r) => [toKey(r.day), Number(r.sales)]));
+  const purchaseMap = Object.fromEntries(purchaseRows.map((r) => [toKey(r.day), Number(r.purchases)]));
 
   const days      = [];
   const totalDays = until.getDate();
