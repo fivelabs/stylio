@@ -1,7 +1,12 @@
 import { api } from "@/api/client";
 
 function deserialize(appt) {
-  return { ...appt, start: new Date(appt.start), end: new Date(appt.end) };
+  return {
+    ...appt,
+    start:    new Date(appt.start),
+    end:      new Date(appt.end),
+    services: appt.services || [],
+  };
 }
 
 export const appointmentsService = {

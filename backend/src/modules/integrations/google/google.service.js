@@ -15,8 +15,8 @@ function createOAuth2Client() {
 
 function buildEventBody(appointment) {
   return {
-    summary:     `${appointment.title} — ${appointment.service}`,
-    description: appointment.service,
+    summary:     appointment.title,
+    description: "",
     start: { dateTime: new Date(appointment.start_at).toISOString(), timeZone: "America/Santiago" },
     end:   { dateTime: new Date(appointment.end_at).toISOString(),   timeZone: "America/Santiago" },
   };
@@ -229,14 +229,12 @@ export async function processWebhook(channelId) {
       } else if (existing) {
         await Appointment.update(existing.id, {
           title:    event.summary || "Sin título",
-          service:  (event.description || "Google Calendar").split("\n")[0],
           start_at: new Date(event.start.dateTime),
           end_at:   new Date(event.end.dateTime),
         });
       } else {
         await Appointment.create({
           title:           event.summary || "Sin título",
-          service:         (event.description || "Google Calendar").split("\n")[0],
           start_at:        new Date(event.start.dateTime),
           end_at:          new Date(event.end.dateTime),
           color:           "brand",

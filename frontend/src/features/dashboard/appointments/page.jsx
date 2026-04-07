@@ -89,12 +89,12 @@ export default function AppointmentsPage() {
 
   const handleCreate = async (formData) => {
     const created = await appointmentsService.create({
-      title:   formData.title,
-      service: formData.service,
-      start:   formData.start.toISOString(),
-      end:     formData.end.toISOString(),
-      color:   formData.color,
-      status:  formData.status,
+      title:    formData.title,
+      services: formData.services,
+      start:    formData.start.toISOString(),
+      end:      formData.end.toISOString(),
+      color:    formData.color,
+      status:   formData.status,
     });
     setAppointments((prev) => [...prev, created]);
     setModal(null);
@@ -102,12 +102,12 @@ export default function AppointmentsPage() {
 
   const handleUpdate = async (formData) => {
     const updated = await appointmentsService.update(editingAppt.id, {
-      title:   formData.title,
-      service: formData.service,
-      start:   formData.start.toISOString(),
-      end:     formData.end.toISOString(),
-      color:   formData.color,
-      status:  formData.status,
+      title:    formData.title,
+      services: formData.services,
+      start:    formData.start.toISOString(),
+      end:      formData.end.toISOString(),
+      color:    formData.color,
+      status:   formData.status,
     });
     setAppointments((prev) => prev.map((a) => (a.id === editingAppt.id ? updated : a)));
     setEditingAppt(null);

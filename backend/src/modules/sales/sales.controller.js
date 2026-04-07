@@ -73,7 +73,7 @@ export async function getChart(req, res) {
   const sinceStr = localDateStr(since);
   const untilStr = localDateStr(until);
 
-  // Ventas diarias — DATE_FORMAT devuelve string YYYY-MM-DD directamente
+  // Ventas diarias — DATE() devuelve YYYY-MM-DD, coincide con el GROUP BY
   const salesRows = await db("appointments as a")
     .leftJoin("services as s", function () {
       this.on("s.name", "=", "a.service").andOn("s.tenant_id", "=", "a.tenant_id");
@@ -84,7 +84,7 @@ export async function getChart(req, res) {
     .whereRaw("DATE(a.start_at) <= ?", [untilStr])
     .groupByRaw("DATE(a.start_at)")
     .select(
-      db.raw("DATE_FORMAT(a.start_at, '%Y-%m-%d') as day"),
+      db.raw("DATE(a.start_at) as day"),
       db.raw("COALESCE(SUM(s.price), 0) as sales"),
     );
 
@@ -97,7 +97,7 @@ export async function getChart(req, res) {
     .whereRaw("DATE(created_at) <= ?", [untilStr])
     .groupByRaw("DATE(created_at)")
     .select(
-      db.raw("DATE_FORMAT(created_at, '%Y-%m-%d') as day"),
+      db.raw("DATE(created_at) as day"),
       db.raw("SUM(cost) as purchases"),
     );
 

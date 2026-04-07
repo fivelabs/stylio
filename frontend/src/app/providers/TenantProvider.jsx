@@ -10,8 +10,12 @@ function inferBaseDomain() {
   if (import.meta.env.VITE_BASE_DOMAIN) return import.meta.env.VITE_BASE_DOMAIN;
   const host = window.location.hostname;
   const parts = host.split(".");
-  // lashbygyal.stylio.cl → stylio.cl | stylio.cl → stylio.cl | localhost → localhost
+  const tld = parts[parts.length - 1];
+  // Dev: lashbygyal.localhost → localhost (cualquier subdominio de localhost → localhost)
+  if (tld === "localhost") return "localhost";
+  // Prod: lashbygyal.stylio.cl → stylio.cl | www.stylio.cl → stylio.cl
   if (parts.length > 2) return parts.slice(-2).join(".");
+  // Root: stylio.cl → stylio.cl | localhost → localhost
   return host;
 }
 

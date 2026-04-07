@@ -128,7 +128,7 @@ export default function TimeGridView({ days, appointments, selected, onSelectApp
                       >
                         <p className={`text-[11px] font-semibold leading-tight truncate ${c.text}`}>{appt.title}</p>
                         {height > 36 && (
-                          <p className={`text-[10px] leading-tight truncate opacity-75 ${c.text}`}>{appt.service}</p>
+                          <p className={`text-[10px] leading-tight truncate opacity-75 ${c.text}`}>{(appt.services || []).map((s) => s.service_name).join(", ") || "Sin servicio"}</p>
                         )}
                         {height > 54 && (
                           <p className={`text-[10px] leading-tight opacity-55 ${c.text}`}>

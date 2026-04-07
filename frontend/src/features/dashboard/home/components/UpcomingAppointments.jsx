@@ -205,10 +205,10 @@ export default function UpcomingAppointments() {
             {appt.title}
           </p>
 
-          {/* Servicio */}
-          {appt.service && (
+          {/* Servicios */}
+          {appt.services?.length > 0 && (
             <p className="text-[11px] text-text-primary/45 mt-0.5 truncate">
-              {appt.service}
+              {appt.services.map((s) => s.service_name).join(", ")}
             </p>
           )}
 

@@ -7,23 +7,25 @@ function formatPrice(price) {
   return new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(price);
 }
 
-export default function ServiceCombobox({ value, onChange, onCreateService, disabled }) {
-  const [query,   setQuery]   = useState(value ?? "");
+/**
+ * ServiceCombobox — searches services and returns the full service object
+ * via onSelect({ id, name, price }).
+ */
+export default function ServiceCombobox({ onSelect, onCreateService, disabled, excludeIds = [] }) {
+  const [query,   setQuery]   = useState("");
   const [options, setOptions] = useState([]);
   const [open,    setOpen]    = useState(false);
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef(null);
   const wrapRef     = useRef(null);
 
-  useEffect(() => { setQuery(value ?? ""); }, [value]);
-
   useEffect(() => {
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const result = await servicesService.list({ q: query || undefined, limit: 3 });
-        setOptions(result.data);
+        const result = await servicesService.list({ q: query || undefined, limit: 5 });
+        setOptions(result.data.filter((s) => !excludeIds.includes(s.id)));
       } catch {
         setOptions([]);
       } finally {
@@ -31,7 +33,7 @@ export default function ServiceCombobox({ value, onChange, onCreateService, disa
       }
     }, 250);
     return () => clearTimeout(debounceRef.current);
-  }, [query]);
+  }, [query, excludeIds.join(",")]);
 
   useEffect(() => {
     function handleOutside(e) {
@@ -43,13 +45,12 @@ export default function ServiceCombobox({ value, onChange, onCreateService, disa
 
   function handleInput(e) {
     setQuery(e.target.value);
-    onChange(e.target.value);
     setOpen(true);
   }
 
   function handleSelect(service) {
-    setQuery(service.name);
-    onChange(service.name);
+    onSelect({ id: service.id, name: service.name, price: service.price });
+    setQuery("");
     setOpen(false);
   }
 
@@ -72,7 +73,7 @@ export default function ServiceCombobox({ value, onChange, onCreateService, disa
           value={query}
           onChange={handleInput}
           onFocus={() => setOpen(true)}
-          placeholder="Buscar servicio…"
+          placeholder="Buscar y agregar servicio…"
           disabled={disabled}
           className={`${INPUT_CLASS} pl-9`}
         />

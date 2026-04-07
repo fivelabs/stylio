@@ -13,11 +13,19 @@ const STATUSES = [
   { value: "cancelled", label: "Cancelada",   Icon: XCircleIcon,     color: "text-red-500",     bg: "bg-red-50 border-red-300"       },
 ];
 
+function formatPrice(price) {
+  return new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP" }).format(price);
+}
+
 function buildInitialForm(appointment, initial) {
   if (appointment) {
     return {
       name:      appointment.title,
-      service:   appointment.service,
+      services:  (appointment.services || []).map((s) => ({
+        service_id:   s.service_id,
+        service_name: s.service_name,
+        price:        s.price,
+      })),
       date:      toDateStr(appointment.start),
       startTime: toTimeStr(appointment.start.getHours(), appointment.start.getMinutes()),
       endTime:   toTimeStr(appointment.end.getHours(), appointment.end.getMinutes()),
@@ -27,7 +35,7 @@ function buildInitialForm(appointment, initial) {
   }
   return {
     name:      "",
-    service:   "",
+    services:  [],
     date:      initial?.dateStr  ?? toDateStr(new Date()),
     startTime: initial?.startStr ?? toTimeStr(9),
     endTime:   initial?.endStr   ?? toTimeStr(10),
@@ -52,11 +60,48 @@ export default function AppointmentModal({ initial, appointment, onClose, onSave
     setError(null);
   };
 
+  const addService = (service) => {
+    setForm((prev) => ({
+      ...prev,
+      services: [...prev.services, {
+        service_id:   service.id,
+        service_name: service.name,
+        price:        service.price,
+      }],
+    }));
+    setError(null);
+  };
+
+  const removeService = (index) => {
+    setForm((prev) => ({
+      ...prev,
+      services: prev.services.filter((_, i) => i !== index),
+    }));
+  };
+
+  const updateServicePrice = (index, newPrice) => {
+    setForm((prev) => ({
+      ...prev,
+      services: prev.services.map((s, i) =>
+        i === index ? { ...s, price: newPrice } : s
+      ),
+    }));
+  };
+
+  const totalPrice = form.services.reduce((sum, s) => sum + (Number(s.price) || 0), 0);
+  const excludeServiceIds = form.services.map((s) => s.service_id);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.name.trim()) return setError("El nombre del cliente es requerido.");
-    if (!form.service.trim()) return setError("El servicio es requerido.");
+    if (form.services.length === 0) return setError("Debes agregar al menos un servicio.");
     if (form.startTime >= form.endTime) return setError("La hora de fin debe ser posterior a la de inicio.");
+
+    for (const s of form.services) {
+      if (s.price === "" || isNaN(Number(s.price)) || Number(s.price) < 0) {
+        return setError(`El precio del servicio "${s.service_name}" no es válido.`);
+      }
+    }
 
     const [sh, sm] = form.startTime.split(":").map(Number);
     const [eh, em] = form.endTime.split(":").map(Number);
@@ -65,12 +110,15 @@ export default function AppointmentModal({ initial, appointment, onClose, onSave
     setSaving(true);
     try {
       await onSave({
-        title:   form.name.trim(),
-        service: form.service.trim(),
-        start:   new Date(y, mo - 1, d, sh, sm, 0, 0),
-        end:     new Date(y, mo - 1, d, eh, em, 0, 0),
-        color:   form.color,
-        status:  form.status,
+        title:    form.name.trim(),
+        services: form.services.map((s) => ({
+          service_id: s.service_id,
+          price:      Number(s.price),
+        })),
+        start:  new Date(y, mo - 1, d, sh, sm, 0, 0),
+        end:    new Date(y, mo - 1, d, eh, em, 0, 0),
+        color:  form.color,
+        status: form.status,
       });
     } catch (err) {
       setError(err.message);
@@ -93,8 +141,8 @@ export default function AppointmentModal({ initial, appointment, onClose, onSave
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-black/25 backdrop-blur-[2px]" onClick={busy ? undefined : onClose} />
-      <div className="relative bg-canvas rounded-2xl shadow-2xl w-full max-w-md mx-4 mb-4 sm:mb-0 overflow-hidden">
-        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-border">
+      <div className="relative bg-canvas rounded-2xl shadow-2xl w-full max-w-lg mx-4 mb-4 sm:mb-0 overflow-hidden max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-border shrink-0">
           <h2 className="font-heading text-[17px] font-semibold text-accent">
             {isEdit ? "Editar cita" : "Nueva cita"}
           </h2>
@@ -108,13 +156,14 @@ export default function AppointmentModal({ initial, appointment, onClose, onSave
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
+        <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4 overflow-y-auto flex-1">
           {error && (
             <p className="text-[13px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
               {error}
             </p>
           )}
 
+          {/* Cliente */}
           <div>
             <label className="block text-[13px] font-medium text-text-primary/60 mb-1.5">Cliente</label>
             {appointment ? (
@@ -131,16 +180,63 @@ export default function AppointmentModal({ initial, appointment, onClose, onSave
             )}
           </div>
 
+          {/* Servicios */}
           <div>
-            <label className="block text-[13px] font-medium text-text-primary/60 mb-1.5">Servicio</label>
+            <label className="block text-[13px] font-medium text-text-primary/60 mb-1.5">Servicios</label>
+
+            {form.services.length > 0 && (
+              <div className="space-y-2 mb-3">
+                {form.services.map((s, idx) => (
+                  <div
+                    key={`${s.service_id}-${idx}`}
+                    className="flex items-center gap-2 p-2.5 rounded-lg border border-border bg-surface"
+                  >
+                    <span className="flex-1 text-[14px] font-medium text-text-primary truncate">
+                      {s.service_name}
+                    </span>
+                    <div className="relative w-28 shrink-0">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[13px] text-text-primary/40 pointer-events-none select-none">
+                        $
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={s.price}
+                        onChange={(e) => updateServicePrice(idx, e.target.value)}
+                        disabled={busy}
+                        className="w-full pl-6 pr-2 py-1.5 rounded-md bg-canvas border border-border text-[13px] font-mono text-text-primary outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 transition-colors disabled:opacity-50"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeService(idx)}
+                      disabled={busy}
+                      className="p-1 rounded-md text-text-primary/30 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                      title="Quitar servicio"
+                    >
+                      <XIcon size={14} />
+                    </button>
+                  </div>
+                ))}
+
+                <div className="flex justify-end">
+                  <span className="text-[13px] font-semibold text-text-primary/70">
+                    Total: <span className="font-mono">{formatPrice(totalPrice)}</span>
+                  </span>
+                </div>
+              </div>
+            )}
+
             <ServiceCombobox
-              value={form.service}
-              onChange={(v) => { setForm((p) => ({ ...p, service: v })); setError(null); }}
+              onSelect={addService}
               onCreateService={(q) => { setCreateServiceQuery(q); setCreateServiceOpen(true); }}
               disabled={busy}
+              excludeIds={excludeServiceIds}
             />
           </div>
 
+          {/* Fecha y hora */}
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-3 sm:col-span-1">
               <label className="block text-[13px] font-medium text-text-primary/60 mb-1.5">Fecha</label>
@@ -156,6 +252,7 @@ export default function AppointmentModal({ initial, appointment, onClose, onSave
             </div>
           </div>
 
+          {/* Estado */}
           <div>
             <label className="block text-[13px] font-medium text-text-primary/60 mb-2">Estado</label>
             <div className="grid grid-cols-2 gap-2">
@@ -181,6 +278,7 @@ export default function AppointmentModal({ initial, appointment, onClose, onSave
             </div>
           </div>
 
+          {/* Color */}
           <div>
             <label className="block text-[13px] font-medium text-text-primary/60 mb-2">Color</label>
             <div className="flex items-center gap-2">
@@ -199,6 +297,7 @@ export default function AppointmentModal({ initial, appointment, onClose, onSave
             </div>
           </div>
 
+          {/* Footer */}
           <div className="flex items-center justify-between pt-2 border-t border-border">
             {isEdit ? (
               <button
@@ -262,7 +361,7 @@ export default function AppointmentModal({ initial, appointment, onClose, onSave
           initialName={createServiceQuery}
           onClose={() => setCreateServiceOpen(false)}
           onCreated={(service) => {
-            setForm((p) => ({ ...p, service: service.name }));
+            addService(service);
             setCreateServiceOpen(false);
           }}
         />

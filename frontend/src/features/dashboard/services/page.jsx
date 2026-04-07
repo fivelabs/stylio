@@ -6,11 +6,15 @@ import {
   CaretUpDownIcon,
   CaretUpIcon,
   MagnifyingGlassIcon,
+  PencilSimpleIcon,
   PlusIcon,
+  TrashIcon,
 } from "@phosphor-icons/react";
 import { servicesService } from "@/api/services.service";
 import { useToast } from "@/components/Toast";
 import CreateServiceModal from "./components/CreateServiceModal";
+import EditServiceModal from "./components/EditServiceModal";
+import DeleteServiceModal from "./components/DeleteServiceModal";
 
 const COLUMNS = [
   { key: "name",       label: "Nombre"     },
@@ -98,13 +102,15 @@ function formatPrice(price) {
 export default function ServicesPage() {
   const toast = useToast();
 
-  const [params,      setParams]      = useState(INITIAL_PARAMS);
-  const [search,      setSearch]      = useState("");
-  const [result,      setResult]      = useState({ data: [], meta: null });
-  const [loading,     setLoading]     = useState(true);
-  const [error,       setError]       = useState(null);
-  const [showCreate,  setShowCreate]  = useState(false);
-  const debounceRef                   = useRef(null);
+  const [params,        setParams]        = useState(INITIAL_PARAMS);
+  const [search,        setSearch]        = useState("");
+  const [result,        setResult]        = useState({ data: [], meta: null });
+  const [loading,       setLoading]       = useState(true);
+  const [error,         setError]         = useState(null);
+  const [showCreate,    setShowCreate]    = useState(false);
+  const [editService,   setEditService]   = useState(null);
+  const [deleteService, setDeleteService] = useState(null);
+  const debounceRef                       = useRef(null);
 
   const fetchServices = useCallback(async (p) => {
     setLoading(true);
@@ -141,6 +147,18 @@ export default function ServicesPage() {
   function handleCreated(service) {
     setShowCreate(false);
     toast.success(`Servicio "${service.name}" creado correctamente.`);
+    fetchServices(params);
+  }
+
+  function handleUpdated(service) {
+    setEditService(null);
+    toast.success(`Servicio "${service.name}" actualizado correctamente.`);
+    fetchServices(params);
+  }
+
+  function handleDeleted(service) {
+    setDeleteService(null);
+    toast.success(`Servicio "${service.name}" eliminado correctamente.`);
     fetchServices(params);
   }
 
@@ -191,6 +209,7 @@ export default function ServicesPage() {
                 </th>
               ))}
               <th className="px-4 py-3 text-left font-medium text-text-primary/55">Descripción</th>
+              <th className="px-4 py-3 text-right font-medium text-text-primary/55 w-24">Acciones</th>
             </tr>
           </thead>
 
@@ -199,7 +218,7 @@ export default function ServicesPage() {
           >
             {error && (
               <tr>
-                <td colSpan={4} className="px-4 py-10 text-center text-red-500">
+                <td colSpan={5} className="px-4 py-10 text-center text-red-500">
                   {error}
                 </td>
               </tr>
@@ -207,7 +226,7 @@ export default function ServicesPage() {
 
             {!error && !loading && data.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-10 text-center text-text-primary/35">
+                <td colSpan={5} className="px-4 py-10 text-center text-text-primary/35">
                   No se encontraron servicios.
                 </td>
               </tr>
@@ -227,6 +246,26 @@ export default function ServicesPage() {
                 </td>
                 <td className="px-4 py-3 text-text-primary/50 max-w-xs truncate">
                   {service.description || <span className="text-text-primary/30">—</span>}
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <button
+                      type="button"
+                      onClick={() => setEditService(service)}
+                      className="p-1.5 rounded-lg text-text-primary/40 hover:text-brand hover:bg-brand/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                      title="Editar servicio"
+                    >
+                      <PencilSimpleIcon size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteService(service)}
+                      className="p-1.5 rounded-lg text-text-primary/40 hover:text-red-600 hover:bg-red-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                      title="Eliminar servicio"
+                    >
+                      <TrashIcon size={16} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -248,6 +287,22 @@ export default function ServicesPage() {
         <CreateServiceModal
           onClose={() => setShowCreate(false)}
           onCreated={handleCreated}
+        />
+      )}
+
+      {editService && (
+        <EditServiceModal
+          service={editService}
+          onClose={() => setEditService(null)}
+          onUpdated={handleUpdated}
+        />
+      )}
+
+      {deleteService && (
+        <DeleteServiceModal
+          service={deleteService}
+          onClose={() => setDeleteService(null)}
+          onDeleted={handleDeleted}
         />
       )}
     </div>

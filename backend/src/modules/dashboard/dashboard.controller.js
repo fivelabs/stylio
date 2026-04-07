@@ -2,6 +2,7 @@ import { db } from "../../config/database.js";
 import { getCurrentTenant } from "../../core/tenantContext.js";
 import { Client } from "../clients/Client.js";
 import { Appointment } from "../appointments/Appointment.js";
+import { AppointmentService } from "../appointments/AppointmentService.js";
 
 function localDateStr(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
@@ -27,16 +28,14 @@ export async function getStats(req, res) {
       .count("* as total")
       .first(),
 
-    // Ingresos del mes: citas completadas con JOIN a services para obtener precio
+    // Ingresos del mes: suma de precios en appointment_services para citas completadas
     db("appointments as a")
-      .leftJoin("services as s", function () {
-        this.on("s.name", "=", "a.service").andOn("s.tenant_id", "=", "a.tenant_id");
-      })
+      .leftJoin("appointment_services as aps", "aps.appointment_id", "a.id")
       .where("a.tenant_id", tenant.id)
       .where("a.status", "completed")
       .whereRaw("DATE(a.start_at) >= ?", [monthStart])
       .whereRaw("DATE(a.start_at) <= ?", [monthEnd])
-      .select(db.raw("COALESCE(SUM(s.price), 0) as earnings"))
+      .select(db.raw("COALESCE(SUM(aps.price), 0) as earnings"))
       .first(),
 
     // Total de clientes registrados del tenant
@@ -60,14 +59,28 @@ export async function getUpcoming(req, res) {
     .orderBy("start_at", "asc")
     .limit(limit);
 
+  const ids = rows.map((r) => r.id);
+  const allServices = await AppointmentService.findByAppointments(ids);
+
+  const servicesByAppt = {};
+  for (const s of allServices) {
+    if (!servicesByAppt[s.appointment_id]) servicesByAppt[s.appointment_id] = [];
+    servicesByAppt[s.appointment_id].push({
+      id:           s.id,
+      service_id:   s.service_id,
+      service_name: s.service_name,
+      price:        Number(s.price),
+    });
+  }
+
   res.json(rows.map((r) => ({
-    id:      r.id,
-    title:   r.title,
-    service: r.service,
-    start:   r.start_at,
-    end:     r.end_at,
-    color:   r.color,
-    status:  r.status ?? "requested",
-    notes:   r.notes ?? null,
+    id:       r.id,
+    title:    r.title,
+    services: servicesByAppt[r.id] || [],
+    start:    r.start_at,
+    end:      r.end_at,
+    color:    r.color,
+    status:   r.status ?? "requested",
+    notes:    r.notes ?? null,
   })));
 }

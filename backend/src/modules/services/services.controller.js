@@ -73,7 +73,7 @@ export async function deleteService(req, res) {
   const service = await Service.findOne({ id: req.params.id });
   if (!service) return res.status(404).json({ error: "Servicio no encontrado" });
 
-  await Service.delete(service.id);
+  await Service.softDelete(service.id);
   res.status(204).end();
 }
 
